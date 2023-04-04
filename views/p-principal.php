@@ -22,7 +22,7 @@
          <div class="nav-item dropdown" id="tDivOpciones">
             <img class="nav-link dropdown-toggle" data-bs-toggle="dropdown" src="../src/menu.png">
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Mis amigos</a></li>
+              <li><a class="dropdown-item" href="./p-amigos.html">Mis amigos</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="../backend/cerrarSesion.php?cerrar=yes" >Cerrar Sesión</a></li>
             </ul>

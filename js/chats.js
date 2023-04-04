@@ -23,7 +23,7 @@ async function mostrarChats(usuario){
 
         const nImg = document.createElement('img')
         nImg.setAttribute('src','../src/foto-perfil.png')
-        nImg.setAttribute('width','50')
+        nImg.setAttribute('height','50')
         nImg.setAttribute('class','p-2')
         nDivCaja.appendChild(nImg)
 

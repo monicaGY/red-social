@@ -11,7 +11,7 @@ async function setup(){
 
 async function mostrarChats(usuario){
     const contenedor = document.querySelector('.contenedor-chats')
-    const response = await fetch(`http://localhost/00_git/chat/rest.php?usuario=${usuario}&amigos`)
+    const response = await fetch(`http://localhost/00_git/chat/rest.php?user=${usuario}&amigos`)
     const data = await response.json();
 
 
@@ -23,7 +23,7 @@ async function mostrarChats(usuario){
 
         const nImg = document.createElement('img')
         nImg.setAttribute('src','../src/foto-perfil.png')
-        nImg.setAttribute('width','50')
+        nImg.setAttribute('height','50')
         nImg.setAttribute('class','p-2')
         nDivCaja.appendChild(nImg)
 
@@ -38,7 +38,6 @@ async function mostrarChats(usuario){
 
         nDivCaja.addEventListener('click',e=>{
 
-            console.log(e)
             //parent node obtener el padre del elemento seleccionado
             //pero hay un limite
             let codAmigo = e.target.parentNode.id;

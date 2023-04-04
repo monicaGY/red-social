@@ -28,3 +28,11 @@ CREATE TABLE mensaje(
     
     
 )
+
+CREATE TABLE amigo(
+	id INT NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    amigo INT NOT NULL,
+    
+    FOREIGN KEY (amigo) REFERENCES usuario(idUsuario)
+);

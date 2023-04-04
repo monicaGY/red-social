@@ -101,8 +101,18 @@ class Mensajeria_BD{
            
         }
     }
+
+    function agregarAmigo($datos){
+        $consulta = 'INSERT INTO amigo (id, nombre, amigo) VALUES('.$datos["amigoId"].',"'.$datos["amigoNombre"].'",'.$datos["usuario"].')';
+        $consulta = $this->_connection->prepare($consulta);
+        $consulta->execute();
+
+        if($consulta->rowCount()>0){
+           return true;
+    
+        }
+    
+    }
 }
 
-// $bd=new Mensajeria_BD();
-// echo $bd->delvolverUsuarioPorId(1);
 ?>

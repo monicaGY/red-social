@@ -1,11 +1,6 @@
 <?php  
 require_once '../sql/bd.php';
 
-// echo $_POST['mensaje'];
-// echo $_POST['chat'];
-// echo $_POST['remitente'];
-// echo $_POST['destinatario'];
-
 try{
     $bd = new Mensajeria_BD();
 
@@ -19,7 +14,6 @@ try{
         "hora" => date("H:i:s")
     );
     $bd->insertarMensaje($datos);
-    echo 'bien';
 
 }catch(Exception $e){  
     echo $e;

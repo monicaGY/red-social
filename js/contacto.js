@@ -4,9 +4,11 @@ let chatId= new URLSearchParams(window.location.search).get('chat');
 let userAmigo = new URLSearchParams(window.location.search).get('amigo')
 
 async function setup(){
-    
-        
-    document.querySelector('#tInpEnviar').addEventListener('click',enviarMensajeBD)
+
+    document.querySelector('#tInpEnviar').addEventListener('click',  e => {
+        enviarMensajeBD()
+    })
+
     await mostrarConversacion(usuario, userAmigo)
     document.querySelector('#regresar-atras').addEventListener('click', e => {
         window.location = 'chats.php';
@@ -14,10 +16,6 @@ async function setup(){
         
 }
 
-
-// function scrollUltimoMensaje(){
-
-// }
 async function mostrarConversacion(userRegistrado,userAmigo){
 
     const response = await fetch(`http://localhost/00_git/chat/rest.php?idUsuario1=${userRegistrado}&idUsuario2=${userAmigo}`)
@@ -68,6 +66,10 @@ function enviarMensajeBD(){
 
     const mensaje = document.querySelector("#tInpMensaje").value
 
+    if(chatId === null){
+        crearChat()
+        // chatId = new URLSearchParams(window.location.search).get('chat');
+    }
     data.append('mensaje',mensaje)
     data.append('chat',chatId)
     data.append('remitente',usuario)
@@ -83,13 +85,13 @@ function enviarMensajeBD(){
             return response.text()
         }
     })
-    // .then(function(text){
-    //     //imprime el mensaje de php
-    //     console.log(text)
-    // })
-    // .catch(function(error){
-    //     console.log(error);
-    // })
+    .then(function(text){
+        //imprime el mensaje de php
+        console.log(text)
+    })
+    .catch(function(error){
+        console.log(error);
+    })
 
 }
 
@@ -120,4 +122,29 @@ function construirCabecera(id){
         console.log(error);
     })
 
+}
+
+function crearChat(){
+    const data = new FormData()
+
+    data.append('remitente',usuario)
+    data.append('destinatario',userAmigo)
+
+    fetch('../backend/crearChat.php',{
+        method:'POST',
+        body:data
+    })
+    .then(function(response){
+        if(response.ok){
+            return response.text()
+        }
+    })
+    .then(function(text){
+        chatId = text
+        // window.location = `p-mensajeria.php?amigo=${userAmigo}&chat=${text}`
+        console.log(text)
+    })
+    .catch(function(error){
+        console.log(error);
+    })
 }

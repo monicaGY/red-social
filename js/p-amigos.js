@@ -29,5 +29,13 @@ async function listarAmigos(){
         nDivNombre.setAttribute('class','p-2 w-100')
         nDivNombre.innerHTML = user.segundario
         nDivCaja.appendChild(nDivNombre)
+
+
+        nDivCaja.addEventListener('click', e => {
+            //obtener el padre más cercano del elemento
+            const idAmigo = e.target.closest('#tDivAmigos>div').id
+            window.location = `p-mensajeria.php?amigo=${idAmigo}`
+
+        })
     });
 }

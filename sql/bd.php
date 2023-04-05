@@ -113,6 +113,26 @@ class Mensajeria_BD{
         }
     
     }
-}
+    function crearChat($datos){
+        $consulta = 'INSERT INTO chat (idChat,usuario_1, usuario_2) 
+        VALUES (NULL,"'.$datos['remitente'].'","'.$datos['destinatario'].'")';
+    
+        $consulta = $this->_connection->prepare($consulta);
+        $consulta->execute();
 
+
+        $consult = 'SELECT idChat FROM chat WHERE usuario_1 = '.$datos['remitente'].' AND usuario_2 = '.$datos['destinatario'];
+        $consult = $this->_connection->prepare($consult);
+        $consult->execute();
+
+        if($consult->rowCount()>0){
+            $lista=[];
+            while ($fila = $consult->fetch(PDO::FETCH_ASSOC)) {
+                $lista[] = $fila;
+            }
+            $idChat = $lista[0]['idChat'];
+            return $idChat;
+        }  
+    }
+}
 ?>

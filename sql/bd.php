@@ -134,5 +134,19 @@ class Mensajeria_BD{
             return $idChat;
         }  
     }
+
+    function crearPublicacion($datos){
+        $consulta = 'INSERT INTO publicacion(mensaje,fecha,hora,idAutor) 
+            VALUES ("'.$datos['estado'].'","'.$datos['fecha'].'","'.$datos['hora'].'","'.$datos['autor'].'")';
+
+        $consulta = $this->_connection->prepare($consulta);
+        $consulta->execute();
+
+        if($consulta->rowCount()>0){
+            return 'correcto';
+        } 
+    }
+
+    
 }
 ?>

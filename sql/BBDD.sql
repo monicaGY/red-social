@@ -36,3 +36,14 @@ CREATE TABLE amigo(
     
     FOREIGN KEY (amigo) REFERENCES usuario(idUsuario)
 );
+
+CREATE TABLE publicacion(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    mensaje VARCHAR(1000) NOT NULL,
+    fecha date,
+    hora time,
+    idAutor INT NOT NULL,
+
+    FOREIGN KEY (idAutor) REFERENCES usuario(idUsuario)
+
+)

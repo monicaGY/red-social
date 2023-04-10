@@ -46,6 +46,17 @@ if(isset($_GET)){
         $consulta = 'SELECT * FROM `usuario`
         WHERE nombre LIKE "'.$_GET['usuarios'].'%"';
     }
+    if(isset($_GET['publicaciones'])){
+        $consulta = 'SELECT publicacion.*, amigo.nombre FROM usuario 
+            INNER JOIN amigo on usuario.idUsuario = amigo.amigo
+            INNER JOIN publicacion ON amigo.id = publicacion.idAutor
+            where usuario.idUsuario ='.$_GET['publicaciones'].'
+            UNION
+            SELECT publicacion.* , usuario.nombre FROM publicacion
+            INNER JOIN usuario on publicacion.idAutor = usuario.idUsuario
+            where idAutor ='.$_GET['publicaciones'].'
+            ORDER BY fecha DESC, hora DESC';
+    }
 
     $consulta = $bd->getConnection()->prepare($consulta);
     $consulta->execute();

@@ -1,13 +1,16 @@
+import { mostrarPublicaciones } from "./p-publicaciones.js";
 document.addEventListener('DOMContentLoaded',setup)
 
 function setup(){
+    mostrarPublicaciones()
     document.querySelector('#tDivBuscar').addEventListener('click',buscarUsuarios)
 }
 
 function buscarUsuarios(){
     abrirBuscador()
-
+    document.querySelector('#tDivPublicaciones').classList.add('d-none')
     document.querySelector("#tInpBuscar").addEventListener('input', mostrarUsuarios)
+    document.querySelector("#tInpBuscar").focus()
 }
 
 function abrirBuscador(){
@@ -21,6 +24,8 @@ function abrirBuscador(){
 function cerrarBuscador(){
     document.querySelector('#tDivPantallaBuscar').classList.add('d-none')
     document.querySelector('#tDivCabecera').classList.remove('d-none')
+    document.querySelector('#tDivPublicaciones').classList.remove('d-none')
+
 }
 async function mostrarUsuarios(e){
     const contenedorUsers = document.querySelector('#nDivUsuarios')

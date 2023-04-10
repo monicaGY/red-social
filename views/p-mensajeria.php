@@ -13,7 +13,7 @@
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
 
 </head>
-<body class="d-flex gap-3 " style="max-width:1000px; margin:auto; " >
+<body class="d-flex gap-3 overflow-hidden" style="max-width:1000px; margin:auto; " >
     
     <div class="flex-column overflow-hidden flex-grow-1">
 

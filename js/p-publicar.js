@@ -1,3 +1,4 @@
+import { mostrarPublicaciones } from "./p-publicaciones.js";
 
 document.addEventListener('DOMContentLoaded',setup)
 
@@ -21,7 +22,7 @@ function setup(){
         mensajeInformativo(elemento)
     })
 
-    document.querySelector('#tBtnPublicar').addEventListener('click', publicarEstado)
+    document.querySelector('#tBtnPublicar').addEventListener('click', publicarEstadoBD)
 }
 
 
@@ -35,11 +36,27 @@ function modificarTextTarea(){
     })
 }
 
-function publicarEstado(){
-    const mensaje = document.querySelector('#tTxTareaPublicar').value
+function publicarEstadoBD(){
+    var elemento = null
 
-    const elemento = document.querySelector('#tDivInfPublicar')
-    mensajeInformativo(elemento)
+    try{
+        const mensaje = document.querySelector('#tTxTareaPublicar').value    
+        if(mensaje.trim() === ''){
+            throw 'vacio'
+        }
+
+        enviarEstadoBD(mensaje)
+        elemento = document.querySelector('#tDivInfPublicar')
+
+        
+    }catch(e){
+        if(e === 'vacio'){
+            elemento = document.querySelector('#tDivInfAvisar')
+
+        }      
+    }finally{
+        mensajeInformativo(elemento)
+    }
 }
 
 function mensajeInformativo(elemento){
@@ -49,8 +66,34 @@ function mensajeInformativo(elemento){
     nTxtPublicar.value=""
     elemento.classList.remove('d-none')
     setTimeout(() => {
-        ventana.classList.add('d-none')
+        if(elemento.id != 'tDivInfAvisar'){
+            ventana.classList.add('d-none')
+        }
         elemento.classList.add('d-none')
 
     }, 1500);
+
+    nTxtPublicar.focus()
+}
+
+function enviarEstadoBD(estado){
+    const data = new FormData()
+    data.append('estado',estado)
+    data.append('autor',usuario)   
+
+    fetch('../backend/publicarEstado.php',{
+        method:'POST',
+        body:data
+    })
+    .then(function(response){
+        if(response.ok){
+            return response.text()
+        }
+    })
+    .then(function(text){
+        mostrarPublicaciones()
+    })
+     .catch(function(error){
+         console.log(error);
+    })
 }

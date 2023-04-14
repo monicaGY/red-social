@@ -5,8 +5,18 @@ let userAmigo = new URLSearchParams(window.location.search).get('amigo')
 
 async function setup(){
 
-    document.querySelector('#tInpEnviar').addEventListener('click',  e => {
-        enviarMensajeBD()
+    document.querySelector('#tInpEnviar').addEventListener('click', async e => {
+        
+        try{
+            if(chatId === null){
+                chatId = await crearChat()
+            }   
+
+            await enviarMensajeBD()
+
+        }catch(e){
+            alert(e)
+        }
     })
 
     await mostrarConversacion(usuario, userAmigo)
@@ -61,37 +71,31 @@ function mostrarMensaje(){
 
 }
 
-function enviarMensajeBD(){
+async function enviarMensajeBD(){
     const data = new FormData()
 
     const mensaje = document.querySelector("#tInpMensaje").value
 
     if(chatId === null){
-        crearChat()
-        // chatId = new URLSearchParams(window.location.search).get('chat');
+        throw new Exception('valor vacio')
     }
+    
     data.append('mensaje',mensaje)
     data.append('chat',chatId)
     data.append('remitente',usuario)
     data.append('destinatario',userAmigo)
 
-    fetch('../backend/insertarMensaje.php',{
-        method:'POST',
-        body:data
+    const response = await fetch('../backend/insertarMensaje.php', {
+        method: 'POST',
+        body: data
     })
-    .then(function(response){
-        if(response.ok){
-            mostrarMensaje()
-            return response.text()
-        }
-    })
-    .then(function(text){
-        //imprime el mensaje de php
-        console.log(text)
-    })
-    .catch(function(error){
-        console.log(error);
-    })
+
+    if (response.ok) {
+        mostrarMensaje()
+        return response.text()
+    } else {
+        throw new Exception("no se ha podido inserta el mensaje")
+    }
 
 }
 
@@ -124,27 +128,25 @@ function construirCabecera(id){
 
 }
 
-function crearChat(){
+async function crearChat(){
     const data = new FormData()
 
     data.append('remitente',usuario)
     data.append('destinatario',userAmigo)
 
-    fetch('../backend/crearChat.php',{
-        method:'POST',
-        body:data
+    const response = await fetch('../backend/crearChat.php', {
+        method: 'POST',
+        body: data
     })
-    .then(function(response){
-        if(response.ok){
-            return response.text()
-        }
-    })
-    .then(function(text){
-        chatId = text
+
+    if (response.ok) {
+        const chatId = response.text();
+        return chatId;
         // window.location = `p-mensajeria.php?amigo=${userAmigo}&chat=${text}`
-        console.log(text)
-    })
-    .catch(function(error){
-        console.log(error);
-    })
+        // chatId = new URLSearchParams(window.location.search).get('chat');
+    } else {
+        throw new Exception("no se ha creado el chat")
+    }
+
 }
+

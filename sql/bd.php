@@ -120,7 +120,12 @@ class Mensajeria_BD{
         $consulta = $this->_connection->prepare($consulta);
         $consulta->execute();
 
+        if($consulta->rowCount()>0){
+            return true;
+        } 
+    }
 
+    function devolverIdChat($datos){
         $consult = 'SELECT idChat FROM chat WHERE usuario_1 = '.$datos['remitente'].' AND usuario_2 = '.$datos['destinatario'];
         $consult = $this->_connection->prepare($consult);
         $consult->execute();
@@ -132,7 +137,9 @@ class Mensajeria_BD{
             }
             $idChat = $lista[0]['idChat'];
             return $idChat;
-        }  
+        }
+        
+        return -1;
     }
 
     function crearPublicacion($datos){
@@ -149,4 +156,16 @@ class Mensajeria_BD{
 
     
 }
+
+// $bd = new Mensajeria_BD();
+
+// $datos = array (
+//     "remitente" => 1,
+//     "destinatario" => 13
+// );
+// if($bd -> crearChat($datos)){
+//     echo 'Id del chat creado'. $bd -> devolverIdChat($datos);
+// }
+
+
 ?>

@@ -8,9 +8,9 @@ try{
         "remitente" => $_POST['remitente'],
         "destinatario" => $_POST['destinatario']
     );
-
-    echo $bd -> crearChat($datos);
-
+    $bd -> crearChat($datos);
+    echo $bd -> devolverIdChat($datos);
+    
 
 }catch(Exception $e){  
     echo $e;

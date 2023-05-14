@@ -18,7 +18,7 @@ if(isset($_GET)){
             'SELECT chat.idChat, usuario.idUsuario, usuario.nombre 
             FROM `chat` INNER JOIN usuario
             ON chat.usuario_1 = usuario.idUsuario OR chat.usuario_2 = usuario.idUsuario
-            WHERE (usuario_1 = "'.$_GET['user'].'" OR usuario_2="'.$_GET['user'].'") 
+            WHERE usuario_1 = "'.$_GET['user'].'"
             AND usuario.idUsuario<>"'.$_GET['user'].'";';
     }
 

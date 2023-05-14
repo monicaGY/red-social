@@ -7,14 +7,15 @@ function setup(){
 async function listarAmigos(){
     const contenedor = document.querySelector('#tDivAmigos')
 
-    const response = await fetch(`http://localhost/00_git/chat/rest.php?usuario=${usuario}`)
+    const response = await fetch(`http://localhost/00_git/chat/rest.php?user=${usuario}&amigos`)
     const data = await response.json()
 
 
     data.forEach(user => {
         const nDivCaja = document.createElement('div')
-        nDivCaja.setAttribute('id',user.idAmigo)
-        nDivCaja.setAttribute('class','d-flex border-bottom p-2 align-items-center')
+        nDivCaja.setAttribute('id',user.idUsuario)
+        nDivCaja.setAttribute('data-idChat',user.idChat)
+        nDivCaja.setAttribute('class','d-flex border-top p-2 align-items-center ')
         contenedor.appendChild(nDivCaja);
 
         const nImg = document.createElement('img')
@@ -25,16 +26,17 @@ async function listarAmigos(){
 
 
         const nDivNombre = document.createElement('div')
-        
+
         nDivNombre.setAttribute('class','p-2 w-100')
-        nDivNombre.innerHTML = user.segundario
+        nDivNombre.innerHTML = user.nombre
         nDivCaja.appendChild(nDivNombre)
 
 
         nDivCaja.addEventListener('click', e => {
             //obtener el padre más cercano del elemento
             const idAmigo = e.target.closest('#tDivAmigos>div').id
-            window.location = `p-mensajeria.php?amigo=${idAmigo}`
+            const chatId= e.target.closest('#tDivAmigos>div').dataset.idchat
+            window.location = `p-mensajeria.php?amigo=${idAmigo}&chat=${chatId}`
 
         })
     });

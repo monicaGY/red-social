@@ -1,20 +1,20 @@
 <?php  
 require_once '../sql/bd.php';
 
-try{
-    $bd = new Mensajeria_BD();
+$bd = new Mensajeria_BD();
 
-    $datos = array (
-        "estado" => $_POST['estado'],
-        "autor" => $_POST['autor'],
-        "fecha" => date("Y-m-d"),
-        "hora" => date("H:i:s")
-    );
+$datos = array (
+    "estado" => $_POST['estado'],
+    "autor" => $_POST['autor'],
+    "fecha" => date("Y-m-d"),
+    "hora" => date("H:i:s")
+);
+$resultado = $bd -> crearPublicacion($datos);
 
-    echo $bd -> crearPublicacion($datos);
-
-}catch(Exception $e){
-    echo $e;
-
+if($resultado){
+    echo json_encode(array("tipo" => "estado", "accion" => "publicar", "resultado" => "correcto"));
 }
+// else{
+//     echo json_encode(array("tipo" => "estado", "accion" => "publicar", "resultado" => "fallido"));
+// }
 ?>

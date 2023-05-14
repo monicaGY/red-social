@@ -16,14 +16,46 @@
 
 
 </head>
-<body class="fs-1 bg-opacity-10 bg-secondary bg-gradient gap-3 h-100 d-flex flex-column overflow-hidden" style="height:100vh;">
-    <div id="tDivCabecera" class="d-flex align-items-center  p-2 gap-3 bg-primary" style="height:70px">
-        <div class="flex-grow-1 text-light">dumbo</div>
+<body class="fs-1 bg-opacity-10 bg-dark bg-gradient gap-3 h-100 d-flex flex-column overflow-hidden" style="height:100vh;">
+    
+    <!-- NAVBAR TELEFONO -->
+    <div id="tDivCabecera" class=" d-flex align-items-center justify-content-center p-2 gap-3 bg-primary" style="height:90px">
 
-        <img src="../src/buscador.png" height="40" id="tDivBuscar"></img>        
-        <img src="../src/mensajeria.png" height="40" id="tDivMensajeria">
-        <img src="../src/publicar.png" height="40" id="tImgPublicar">
-         <div class="nav-item dropdown" id="tDivOpciones">
+        <nav class="d-sm-none navbar">
+            <div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLightNavbar" aria-controls="offcanvasLightNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="w-75 offcanvas offcanvas-start text-bg-light" tabindex="-1" id="offcanvasLightNavbar" aria-labelledby="offcanvasLightNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasLightNavbarLabel">Menú</h5>
+                        <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item"><a class="nav-link active" aria-current="page" id="tNavPublicar" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLightNavbar" aria-controls="offcanvasLightNavbar">Publicar estado</a></li>
+                            <li class="nav-item"><a class="nav-link" id="tNavBuscar">Buscar usuarios</a></li> 
+                            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Cuenta</a>
+                                <ul class="dropdown-menu dropdown-menu-light">
+                                  <li><a class="dropdown-item"  onclick="window.location = './p-mensajeria.php' ">Mensajería</a></li>
+                                  <li><a class="dropdown-item" href="./p-amigos.php">Mis amigos</a></li>
+                                  <li><hr class="dropdown-divider"></li>
+                                  <li><a class="dropdown-item" href="../backend/cerrarSesion.php?cerrar=yes">Cerrar sesión</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="flex-grow-1 text-light">
+            <img src="../src/logo.png " style="height:70px">
+        </div>
+
+        <img src="../src/buscador.png" height="40" id="tDivBuscar" class="d-none d-sm-block"></img>        
+        <img src="../src/mensajeria.png" height="40" id="tDivMensajeria" class="d-none d-sm-block" onclick=" window.location = './p-mensajeria.php' ">
+        <img src="../src/publicar.png" height="40" id="tImgPublicar" class="d-none d-sm-block">
+        <div class="nav-item dropdown d-none d-sm-block" id="tDivOpciones">
             <img class="nav-link dropdown-toggle" data-bs-toggle="dropdown" src="../src/menu.png">
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="./p-amigos.php">Mis amigos</a></li>
@@ -31,12 +63,9 @@
               <li><a class="dropdown-item" href="../backend/cerrarSesion.php?cerrar=yes" >Cerrar Sesión</a></li>
             </ul>
         </div>
-            
-
-        
-        
     </div>
 
+    <!-- VENTANA REALIZAR PUBLICACIÓN -->
     <div id="tDivVentana" class="d-none fixed-top bg-dark bg-opacity-50 d-flex justify-content-center align-items-center" style="height:100vh">
        
         <div class="border-opacity-50 border-4 border border-primary rounded-5 alert alert-light h-50 w-75 d-flex flex-column justify-content-center align-items-center" role="alert">
@@ -77,17 +106,20 @@
         </div>
     </div>
 
-    <div id="tDivPublicaciones" class="container flex-grow-1 d-flex flex-column gap-2"style="overflow-y: scroll; height:calc(100vh - 100px)" ></div>
+    <!-- ALERT CUANDO NO SE REALIZO UNA PUBLICACIÓN -->
+    <div id="tDivPublicaciones" class="container flex-grow-1 d-flex flex-column gap-2" style="overflow-y: scroll; height:calc(100vh - 120px)" >
+    </div>
 
-   <div id="tDivPantallaBuscar" style="height:100vh" class="d-none">
-        <div class="my-3 d-flex mx-2">
+    <!-- BUSCAR USUARIOS -->
+   <div id="tDivPantallaBuscar" style="height:100vh" class="p-4 d-none">
+        <div class="d-flex gap-3 ">
             <div id="tDivAtras">
                 <img src="../src/atras.png" width="50">
             </div>
-         <input id="tInpBuscar" class="form-control" type="text" placeholder="Buscar">
+         <input id="tInpBuscar" class="flex-grow-1 mx-auto form-control" style="max-width:500px"type="text" placeholder="Buscar">
         </div>
 
-        <div id="nDivUsuarios" >
+        <div id="nDivUsuarios" class="container pt-4 ">
         </div>
 
     </div>
@@ -95,24 +127,15 @@
 
 
     <script>
-        let usuario = '<?php
-            echo $_SESSION['idUsuario'];
-
-            if(empty($_SESSION['idUsuario'])){
-                header("Location: http://localhost/00_git/chat/");
-            }
-        ?>'
-
-        document.querySelector("#tDivMensajeria").addEventListener('click', e => {
-            window.location ="./p-mensajeria.php"
-
+        let usuario = <?php 
+        if(empty($_SESSION["idUsuario"])){
+            ?>
+            window.location = "../index.html";
+            <?php
+        }else{
+            echo $_SESSION["idUsuario"];
         }
-        
-        
-        )
-
-        
-
+        ?>
     </script>
 </body>
 </html>

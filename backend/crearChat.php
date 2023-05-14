@@ -1,18 +1,20 @@
 <?php  
 require_once '../sql/bd.php';
 
-try{
-    $bd = new Mensajeria_BD();
+$bd = new Mensajeria_BD();
+$datos = array (
+    "remitente" => $_POST['remitente'],
+    "destinatario" => $_POST['destinatario']
+);
+$resultado = $bd -> crearChat($datos);
 
-    $datos = array (
-        "remitente" => $_POST['remitente'],
-        "destinatario" => $_POST['destinatario']
-    );
-    $bd -> crearChat($datos);
-    echo $bd -> devolverIdChat($datos);
-    
 
-}catch(Exception $e){  
-    echo $e;
+if($resultado){
+    $idChat = $bd -> devolverIdChat($datos);
+    echo json_encode(array("tipo" => "mensajeria" , "accion" => "crear chat", "chat" => $idChat, "resultado" => "correcto"));
+}else{
+    echo json_encode(array("tipo" => "mensajeria" , "accion" => "crear chat", "resultado" => "fallido"));
+
 }
+    
 ?>

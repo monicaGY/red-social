@@ -7,12 +7,19 @@ function setup(){
     modificarTextTarea()
 
     document.querySelector('#tImgPublicar').addEventListener('click', e => {
-        const nTxtPublicar = document.querySelector('#tTxTareaPublicar')
-        const ventana = document.querySelector('#tDivVentana')
-        ventana.classList.remove('d-none')
-        nTxtPublicar.focus()
-        nTxtPublicar.style.height = "10px"
+        // const nTxtPublicar = document.querySelector('#tTxTareaPublicar')
+        // const ventana = document.querySelector('#tDivVentana')
+        // ventana.classList.remove('d-none')
+        // nTxtPublicar.focus()
+        // nTxtPublicar.style.height = "10px"
+        mostrarVentanaPublicar()
 
+
+    })
+
+    document.querySelector('#tNavPublicar').addEventListener('click', e => {
+        // document.querySelector(`#${e.target.id}`).classList.toggle('d-none')
+        mostrarVentanaPublicar()
 
     })
 
@@ -42,7 +49,7 @@ function publicarEstadoBD(){
     try{
         const mensaje = document.querySelector('#tTxTareaPublicar').value    
         if(mensaje.trim() === ''){
-            throw 'vacio'
+            throw new Error('vacio')
         }
 
         enviarEstadoBD(mensaje)
@@ -50,9 +57,8 @@ function publicarEstadoBD(){
 
         
     }catch(e){
-        if(e === 'vacio'){
+        if(e.message === 'vacio'){
             elemento = document.querySelector('#tDivInfAvisar')
-
         }      
     }finally{
         mensajeInformativo(elemento)
@@ -87,13 +93,22 @@ function enviarEstadoBD(estado){
     })
     .then(function(response){
         if(response.ok){
-            return response.text()
+            return response.json()
         }
     })
-    .then(function(text){
-        mostrarPublicaciones()
+    .then(function(datos){
+        if(datos.resultado === "fallido"){
+            document.querySelector("#tDivAlertPublicar").classList.toggle('d-none')
+        }else{
+            mostrarPublicaciones()
+        }
     })
-     .catch(function(error){
-         console.log(error);
-    })
+}
+
+function mostrarVentanaPublicar(){
+    const nTxtPublicar = document.querySelector('#tTxTareaPublicar')
+    const ventana = document.querySelector('#tDivVentana')
+    ventana.classList.remove('d-none')
+    nTxtPublicar.focus()
+    nTxtPublicar.style.height = "10px"
 }

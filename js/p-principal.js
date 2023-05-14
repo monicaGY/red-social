@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded',setup)
 function setup(){
     mostrarPublicaciones()
     document.querySelector('#tDivBuscar').addEventListener('click',buscarUsuarios)
+    document.querySelector("#tNavBuscar").addEventListener('click',buscarUsuarios)
 }
 
 function buscarUsuarios(){
@@ -22,14 +23,20 @@ function abrirBuscador(){
 }
 
 function cerrarBuscador(){
+    document.querySelector("#tInpBuscar").value= ''
     document.querySelector('#tDivPantallaBuscar').classList.add('d-none')
     document.querySelector('#tDivCabecera').classList.remove('d-none')
     document.querySelector('#tDivPublicaciones').classList.remove('d-none')
+    const contenedorUsers = document.querySelector('#nDivUsuarios')
+
+    while(contenedorUsers.hasChildNodes()){
+        contenedorUsers.removeChild(contenedorUsers.firstChild)
+    }
 
 }
 async function mostrarUsuarios(e){
     const contenedorUsers = document.querySelector('#nDivUsuarios')
-    const nombre = e.target.value
+    const nombre = e.target.value.trim()
     while(contenedorUsers.hasChildNodes()){
         contenedorUsers.removeChild(contenedorUsers.firstChild)
     }

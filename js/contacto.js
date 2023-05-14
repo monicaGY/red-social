@@ -1,31 +1,58 @@
 document.addEventListener('DOMContentLoaded',setup)
-//FAKLTA CONSEGUIR EL ID DEL CHAT
 let chatId= new URLSearchParams(window.location.search).get('chat');
 let userAmigo = new URLSearchParams(window.location.search).get('amigo')
+const botonEnviar = document.querySelector('#tBtnEnviar')
 
 async function setup(){
 
-    document.querySelector('#tInpEnviar').addEventListener('click', async e => {
-        
-        try{
-            if(chatId === null){
-                chatId = await crearChat()
-            }   
+    modificarTxtArea()
 
-            await enviarMensajeBD()
+    if(userAmigo == null){
+        const contenedorAlert = document.querySelector('#tDivAlert')
+        contenedorAlert.classList.toggle('d-none')
+    }else{
+        const contenedor = document.querySelector('#ventanaChat')
+        contenedor.classList.toggle('d-sm-flex')
+        await mostrarConversacion(usuario, userAmigo)
+    }
 
-        }catch(e){
-            alert(e)
+    document.querySelector('#tTxTareaMensaje').addEventListener('keydown', e => {
+        const txt = e.target.value.trim()
+        if(txt != ''){
+            botonEnviar.classList.remove('d-none')
+        }else{
+            botonEnviar.classList.add('d-none')
         }
     })
+    
+    botonEnviar.addEventListener('click', async e => {
+        try{
+            if(chatId === null || chatId === undefined){
+                chatId = await crearChat()
+            }  
+            await enviarMensajeBD()
+        }catch(e){
+            document.querySelector('#tDivPublicaciones').classList.toggle('d-none')
+            document.querySelector('#tDivAlert').innerHTML= `ERROR: ${e.message}`
+            document.querySelector('#contenedor-mensajes').scrollTop = document.querySelector('#contenedor-mensajes').scrollHeight
 
-    await mostrarConversacion(usuario, userAmigo)
-    document.querySelector('#regresar-atras').addEventListener('click', e => {
-        window.location = 'chats.php';
-    })
-        
+        }
+    })  
 }
 
+function modificarTxtArea(){
+    const element = document.querySelector('#tTxTareaMensaje')
+    element.style.resize = "none"
+    element.style.height = "10px"
+    element.addEventListener('input', e => {
+
+        if(e.target.scrollHeight<=200){
+            e.target.style.height = (e.target.scrollHeight) + "px";
+            const contenedor = document.querySelector('#contenedor-mensajes')
+            contenedor.scrollTop = contenedor.scrollHeight
+        }
+    })
+}
 async function mostrarConversacion(userRegistrado,userAmigo){
 
     const response = await fetch(`http://localhost/00_git/chat/rest.php?idUsuario1=${userRegistrado}&idUsuario2=${userAmigo}`)
@@ -35,7 +62,6 @@ async function mostrarConversacion(userRegistrado,userAmigo){
     construirCabecera(userAmigo)
     data.forEach(element => {
         const cajaMensaje = document.createElement('div')
-        // cajaMensaje.setAttribute('class','d-flex')
         contenedor.appendChild(cajaMensaje)
 
 
@@ -49,11 +75,15 @@ async function mostrarConversacion(userRegistrado,userAmigo){
     });
     
     document.querySelector('#contenedor-mensajes').scrollTop = document.querySelector('#contenedor-mensajes').scrollHeight
-
+    
+    //solo aparece en dispositivos moviles
+    document.querySelector('#regresar-atras').addEventListener('click', e => {
+        window.location = 'p-mensajeria.php';
+    })
 }
 
 function mostrarMensaje(){
-    const nInpMensaje = document.querySelector('#tInpMensaje')
+    const nTxtMensaje = document.querySelector('#tTxTareaMensaje')
     const contenedor = document.querySelector('#contenedor-mensajes')
 
     const cajaMensaje = document.createElement('div')
@@ -61,25 +91,26 @@ function mostrarMensaje(){
 
     const mensaje = document.createElement('div')
     mensaje.setAttribute('class','d-inline-flex bg-light rounded-3 p-2 m-2')
-    mensaje.innerHTML = nInpMensaje.value
+    mensaje.innerHTML = nTxtMensaje.value
     cajaMensaje.appendChild(mensaje)
     cajaMensaje.setAttribute('class','d-flex flex-row-reverse')
-
-
-    nInpMensaje.value = '';
+    nTxtMensaje.value = '';
     contenedor.scrollTop = contenedor.scrollHeight
-
+    document.querySelector('#tBtnEnviar').classList.add('d-none')
 }
 
 async function enviarMensajeBD(){
     const data = new FormData()
 
-    const mensaje = document.querySelector("#tInpMensaje").value
+    const mensaje = document.querySelector("#tTxTareaMensaje").value.trim()
 
-    if(chatId === null){
-        throw new Exception('valor vacio')
+    if(chatId === null || chatId === undefined){
+        throw new Error('no se ha podido crear el chat con el usuario')
     }
     
+    if(mensaje === ""){
+        throw new Error("no puedes enviar mensajes vacíos")
+    }
     data.append('mensaje',mensaje)
     data.append('chat',chatId)
     data.append('remitente',usuario)
@@ -92,9 +123,9 @@ async function enviarMensajeBD(){
 
     if (response.ok) {
         mostrarMensaje()
-        return response.text()
+        // return response.text()
     } else {
-        throw new Exception("no se ha podido inserta el mensaje")
+        throw new Error("no se ha podido enviar el mensaje")
     }
 
 }
@@ -139,13 +170,15 @@ async function crearChat(){
         body: data
     })
 
-    if (response.ok) {
-        const chatId = response.text();
-        return chatId;
-        // window.location = `p-mensajeria.php?amigo=${userAmigo}&chat=${text}`
-        // chatId = new URLSearchParams(window.location.search).get('chat');
-    } else {
-        throw new Exception("no se ha creado el chat")
+    if(response.ok) {
+        const datos = await response.json();
+
+        if(datos.resultado === "correcto"){
+            chatId = datos.chat
+            return chatId
+        }else{
+            throw new Exception("2 no se ha creado el chat")
+        }
     }
 
 }

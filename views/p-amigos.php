@@ -10,23 +10,26 @@
     <title>Dumbo</title>
     <script src='../js/p-amigos.js' type='module' defer></script>
 </head>
-<body class="fs-1 bg-light ">
-    <div class="text-light bg-primary p-3">
+<body class="fs-1 bg-opacity-10 bg-dark bg-gradient">
+    <div class="d-flex gap-3 text-light bg-primary p-3">
+        <div style="width:50px" onclick=" window.location = 'p-principal.php' ">
+            <img src="../src/atras.png" height="35"> 
+        </div>  
         Mis amigos
     </div>
 
-    <div id="tDivAmigos">
-
-    </div>
+    <div id="tDivAmigos" class="container bg-light rounded-bottom"></div>
 
     <script>
-        let usuario = '<?php
-            echo $_SESSION['idUsuario'];
-
-            if(empty($_SESSION['idUsuario'])){
-                header("Location: http://localhost/00_git/chat/");
-            }
-        ?>'
+        let usuario = <?php 
+        if(empty($_SESSION["idUsuario"])){
+            ?>
+            window.location = "../index.html";
+            <?php
+        }else{
+            echo $_SESSION["idUsuario"];
+        }
+        ?>
     </script>
 </body>
 </html>

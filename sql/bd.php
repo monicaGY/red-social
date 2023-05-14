@@ -29,12 +29,8 @@ class Mensajeria_BD{
         $consulta->execute();
         if($consulta->rowCount()>0){
             return true; 
-            // $lista=[];
-            // while ($fila = $consulta->fetch(PDO::FETCH_ASSOC)) {
-            //     $lista[] = $fila;
-            // }
-            // return json_encode($lista[0]['idUsuario']);
         }
+        return false;
     }
 
     function usuarioExistente($usuario){
@@ -46,6 +42,7 @@ class Mensajeria_BD{
         if($consulta->rowCount()>0){
             return true;
         }
+        return false;
     }
 
     function crearUsuario($usuario, $contraseña){
@@ -123,6 +120,7 @@ class Mensajeria_BD{
         if($consulta->rowCount()>0){
             return true;
         } 
+        return false;
     }
 
     function devolverIdChat($datos){
@@ -139,7 +137,6 @@ class Mensajeria_BD{
             return $idChat;
         }
         
-        return -1;
     }
 
     function crearPublicacion($datos){
@@ -150,8 +147,9 @@ class Mensajeria_BD{
         $consulta->execute();
 
         if($consulta->rowCount()>0){
-            return 'correcto';
+            return true;
         } 
+        return  false;
     }
 
     

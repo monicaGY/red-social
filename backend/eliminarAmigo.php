@@ -6,12 +6,12 @@ try{
     $bd = new Mensajeria_BD();
 
     $datos = array(
-        "usuario" => intval($_POST['usuario']),
-        "amigoNombre" => $_POST['nombre'],
+        "usuarioId" => intval($_POST['idUserLogeado']),
         "amigoId" => intval($_POST['idAmigo'])
     );
 
-    $bd->agregarAmigo($datos);
+    $bd->eliminarAmigo($datos);
+    echo 'correcto';
 }catch(Exception $e){
     echo $e;
 }

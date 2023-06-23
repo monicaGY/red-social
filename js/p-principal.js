@@ -1,8 +1,8 @@
-import { mostrarPublicaciones } from "./p-publicaciones.js";
+import { publicacionesDelUsuario } from "./p-publicaciones.js";
 document.addEventListener('DOMContentLoaded',setup)
 
-function setup(){
-    mostrarPublicaciones()
+async function setup(){
+    publicacionesDelUsuario()
     document.querySelector('#tDivBuscar').addEventListener('click',buscarUsuarios)
     document.querySelector("#tNavBuscar").addEventListener('click',buscarUsuarios)
 }
@@ -41,16 +41,16 @@ async function mostrarUsuarios(e){
         contenedorUsers.removeChild(contenedorUsers.firstChild)
     }
 
-    if(!nombre){
+    if(nombre === ''){
         return
     }
 
-    const response = await fetch(`http://localhost/00_git/chat/rest.php?usuarios=${nombre}`)    
-    const listaUsuarios = await response.json()
+    const responseUsers = await fetch(`http://localhost/00_git/chat/rest.php?user=${nombre}`)    
+    const listaUsuarios = await responseUsers.json()
 
 
-    const respuesta = await fetch(`http://localhost/00_git/chat/rest.php?usuario=${usuario}`)
-    const listaAmigos = await respuesta.json()
+    const respuestaAmigos = await fetch(`http://localhost/00_git/chat/rest.php?user=${usuario}&amigos`)
+    const listaAmigos = await respuestaAmigos.json()
     
     listaUsuarios.forEach(user => {
         const nDivCaja = document.createElement('div')
@@ -69,21 +69,20 @@ async function mostrarUsuarios(e){
         nDivNombre.setAttribute('class','flex-grow-1 ')
         nImg.setAttribute('src','../src/foto-perfil.png')
         nImg.setAttribute('height',50)
+        nImg.setAttribute('id', `imgAñadirUser${user.idUsuario}`)
         
 
 
         nDivCaja.setAttribute('id',user.idUsuario)
+        nDivCaja.setAttribute('data-nombre',user.nombre)
+        
         nDivCaja.setAttribute('class','d-flex border p-2 gap-2 align-items-center')
         nDivNombre.innerHTML = user.nombre
 
-        
-        const nImgAñadir = document.createElement('img')
-        nDivCaja.appendChild(nImgAñadir)
-        nImgAñadir.setAttribute('height',30)
-        nImgAñadir.setAttribute('src','../src/agregar-usuario.png')
-        nImgAñadir.setAttribute('data-id', user.idUsuario)
-        nImgAñadir.setAttribute('data-nombre',user.nombre)
-        nImgAñadir.addEventListener('click', añadirAmigo)
+        cambiarIconoAgregar(nDivCaja, user.idUsuario)
+
+        const nImgAñadir = document.querySelector(`#iconAñadirUser${user.idUsuario}`)
+
 
         if(user.idUsuario == usuario){
             nImgAñadir.remove()          
@@ -91,13 +90,9 @@ async function mostrarUsuarios(e){
         }
         listaAmigos.forEach(amigo => {
 
-            if(user.idUsuario == amigo.idAmigo){
-
-                const nDiv = document.createElement('div')
-                nDivCaja.appendChild(nDiv)
-                nDiv.innerHTML = 'Agregado'
-                nDiv.setAttribute('class','fs-5 fw-light border border-3 rounded-pill px-3')
-                nImgAñadir.remove()          
+            if(user.idUsuario == amigo.idUsuario){
+                nImgAñadir.remove()
+                cambiarIconoEliminar(nDivCaja, user.idUsuario, usuario)
             }
             
         });
@@ -105,7 +100,34 @@ async function mostrarUsuarios(e){
     });
 
 }
+function eliminarAmigo(e){
+    const data = new FormData()
+    const idAmigo = e.target.dataset.amigo
+    const idUsuario = e.target.dataset.user
 
+
+    data.append('idAmigo',idAmigo)
+    data.append('idUserLogeado',idUsuario)
+
+    fetch('../backend/eliminarAmigo.php',{
+        method:'POST',
+        body:data
+    })
+    .then(function(response){
+        if(response.ok){
+            
+            return response.text()
+        }
+    })
+    .then(function(){
+        //  SI SE elimina AL USUARIO
+        const nDivChatSelect = document.getElementById(idAmigo)
+        const nImgEliminar = document.getElementById(`iconEliminarUser${idAmigo}`)
+        nImgEliminar.remove()
+        cambiarIconoAgregar(nDivChatSelect, idAmigo)
+        publicacionesDelUsuario()
+    })
+}
 function añadirAmigo(e){
     
 
@@ -113,9 +135,14 @@ function añadirAmigo(e){
 
     const datos = e.target.dataset
 
+    const idAmigo = datos.id
 
-    data.append('idAmigo',datos.id)
-    data.append('nombre',datos.nombre)
+    const nDiv = document.getElementById(idAmigo)
+
+    const nombreAmigo = nDiv.dataset.nombre
+
+    data.append('idAmigo',idAmigo)
+    data.append('nombre', nombreAmigo)
     data.append('usuario',usuario)
 
     fetch('../backend/agregarAmigo.php',{
@@ -124,30 +151,54 @@ function añadirAmigo(e){
     })
     .then(function(response){
         if(response.ok){
-
-            cambiarIcono(e)
-
+            
             return response.text()
         }
     })
-    // .then(function(text){
-    //     //imprime el mensaje de php
-    //     console.log(text)
-    // })
-    // .catch(function(error){
-    //     console.log(error);
-    // })
+    .then(function(){
+        //  SI SE AGREGA AL USUARIO
+        const nDivPadre = document.getElementById(idAmigo)
+        const nImgAñadir = document.querySelector(`#iconAñadirUser${idAmigo}`)
+        nImgAñadir.remove()
+        cambiarIconoEliminar(nDivPadre, idAmigo, usuario)
+        document.querySelector("#tDivInfAgregar").classList.toggle("d-none")
+        
+        setTimeout(() => {
+            document.querySelector("#tDivInfAgregar").classList.toggle("d-none")
+
+        }, 1500);
+        publicacionesDelUsuario()
+
+    })
 
 
 }
 
-function cambiarIcono(e){
-    const parentImg = document.getElementById(`${e.target.dataset.id}`)
-    e.target.classList.add('d-none')
 
-    const nDiv = document.createElement('div')
-    parentImg.appendChild(nDiv)
-    nDiv.innerHTML = 'Agregado'
-    nDiv.setAttribute('class','fs-5 fw-light border border-3 rounded-pill px-3')
+function cambiarIconoAgregar(elemtPadre, id){
+    const nImgAñadir = document.createElement('img')
+    elemtPadre.appendChild(nImgAñadir)
+    nImgAñadir.setAttribute('id',`iconAñadirUser${id}`)
+    nImgAñadir.setAttribute('class',`imgAgregarUser`)
+    nImgAñadir.setAttribute('height',30)
+    nImgAñadir.setAttribute('src','../src/agregar-usuario.png')
+    nImgAñadir.setAttribute('data-id', id)
+    nImgAñadir.addEventListener('click', añadirAmigo)
+    
+}
+
+function cambiarIconoEliminar(elemtPadre, id, user){
+    const nImgEliminar = document.createElement('img')
+    nImgEliminar.setAttribute('id',`iconEliminarUser${id}`)
+    nImgEliminar.setAttribute('class','imgEliminar')
+    nImgEliminar.setAttribute('data-amigo', id)
+    if(user){
+        nImgEliminar.setAttribute('data-user', user)
+    }
+    nImgEliminar.setAttribute('height',45)
+    nImgEliminar.setAttribute('src','../src/borrar.png')
+    elemtPadre.appendChild(nImgEliminar)
+    nImgEliminar.addEventListener('click',eliminarAmigo)
+
 
 }

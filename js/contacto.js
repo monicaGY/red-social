@@ -1,3 +1,6 @@
+import { cambiarFormatoHora } from "./formatearDate.js";
+import { cambiarFormatoFechaSinYear } from "./formatearDate.js";
+import { meses } from "./formatearDate.js";
 document.addEventListener('DOMContentLoaded',setup)
 let chatId= new URLSearchParams(window.location.search).get('chat');
 let userAmigo = new URLSearchParams(window.location.search).get('amigo')
@@ -12,7 +15,8 @@ async function setup(){
         contenedorAlert.classList.toggle('d-none')
     }else{
         const contenedor = document.querySelector('#ventanaChat')
-        contenedor.classList.toggle('d-sm-flex')
+        contenedor.classList.toggle('d-none')
+        construirCabecera(userAmigo)
         await mostrarConversacion(usuario, userAmigo)
     }
 
@@ -28,7 +32,15 @@ async function setup(){
     botonEnviar.addEventListener('click', async e => {
         try{
             if(chatId === null || chatId === undefined){
-                chatId = await crearChat()
+                const response = await fetch(`http://localhost/00_git/chat/rest.php?user1=${usuario}&user2=${userAmigo}`)
+                const data = await response.json()
+                if(data.length == 1){
+                    chatId = data[0].idChat
+
+                }else{
+                    chatId = await crearChat()
+
+                }
             }  
             await enviarMensajeBD()
         }catch(e){
@@ -54,21 +66,40 @@ function modificarTxtArea(){
     })
 }
 async function mostrarConversacion(userRegistrado,userAmigo){
-
+    var fechaAnterior = null
     const response = await fetch(`http://localhost/00_git/chat/rest.php?idUsuario1=${userRegistrado}&idUsuario2=${userAmigo}`)
     const data = await response.json();
     const contenedor = document.querySelector('#contenedor-mensajes')
 
-    construirCabecera(userAmigo)
+    while (contenedor.hasChildNodes()) {
+        contenedor.removeChild(contenedor.firstChild)
+    }
+    
     data.forEach(element => {
+
+        const fecha = cambiarFormatoFechaSinYear(element.fecha,meses)
+        const nDivFecha = document.createElement('div')
+        nDivFecha.setAttribute('data-fecha',fecha)
+        nDivFecha.setAttribute('class','bg-light rounded-4 mx-auto fs-6 p-1 text-center bg-opacity-50')
+        nDivFecha.setAttribute('style','width:110px')
+        nDivFecha.innerHTML = fecha
+        contenedor.appendChild(nDivFecha)
+
+        if(fecha === fechaAnterior){
+            nDivFecha.remove()
+        }
+        fechaAnterior = fecha
+
         const cajaMensaje = document.createElement('div')
         contenedor.appendChild(cajaMensaje)
 
-
         const mensaje = document.createElement('div')
-        mensaje.setAttribute('class','d-inline-flex bg-light rounded-3 p-2 m-2')
-        mensaje.innerHTML = element.contenido
+        mensaje.setAttribute('class',' bg-light text-end rounded-3 p-2 m-2')
+        const hora =cambiarFormatoHora(element.hora)
+        mensaje.innerHTML = (`${element.contenido}
+            <div class="fw-semibold opacity-75" style="font-size:small">${hora}</div>`)
         cajaMensaje.appendChild(mensaje)
+        cajaMensaje.setAttribute('class','d-flex flex-row')
         if(element.remitente === parseInt(userRegistrado)){
             cajaMensaje.setAttribute('class','d-flex flex-row-reverse')
         }
@@ -82,35 +113,20 @@ async function mostrarConversacion(userRegistrado,userAmigo){
     })
 }
 
-function mostrarMensaje(){
-    const nTxtMensaje = document.querySelector('#tTxTareaMensaje')
-    const contenedor = document.querySelector('#contenedor-mensajes')
-
-    const cajaMensaje = document.createElement('div')
-    contenedor.appendChild(cajaMensaje)
-
-    const mensaje = document.createElement('div')
-    mensaje.setAttribute('class','d-inline-flex bg-light rounded-3 p-2 m-2')
-    mensaje.innerHTML = nTxtMensaje.value
-    cajaMensaje.appendChild(mensaje)
-    cajaMensaje.setAttribute('class','d-flex flex-row-reverse')
-    nTxtMensaje.value = '';
-    contenedor.scrollTop = contenedor.scrollHeight
-    document.querySelector('#tBtnEnviar').classList.add('d-none')
-}
 
 async function enviarMensajeBD(){
     const data = new FormData()
 
     const mensaje = document.querySelector("#tTxTareaMensaje").value.trim()
 
-    if(chatId === null || chatId === undefined){
+    if(chatId === null || chatId === "undefined"){
         throw new Error('no se ha podido crear el chat con el usuario')
     }
     
     if(mensaje === ""){
         throw new Error("no puedes enviar mensajes vacíos")
     }
+    
     data.append('mensaje',mensaje)
     data.append('chat',chatId)
     data.append('remitente',usuario)
@@ -122,11 +138,13 @@ async function enviarMensajeBD(){
     })
 
     if (response.ok) {
-        mostrarMensaje()
-        // return response.text()
+        await mostrarConversacion(usuario, userAmigo)
     } else {
         throw new Error("no se ha podido enviar el mensaje")
     }
+
+    const nTxtMensaje = document.querySelector('#tTxTareaMensaje')
+    nTxtMensaje.value = '';
 
 }
 
@@ -147,7 +165,6 @@ function construirCabecera(id){
         }
     })
     .then(function(text){
-        //imprime el mensaje de php
         const cabecera = document.querySelector("#header-contacto")
         const nDivNombre = document.createElement('div')
         cabecera.appendChild(nDivNombre)

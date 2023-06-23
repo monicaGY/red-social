@@ -9,14 +9,13 @@
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
     <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet">
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    <link rel="stylesheet" href="style.css">
    <script src='../js/p-principal.js' type='module' defer></script>
    <script src='../js/p-publicar.js' type='module' defer></script>
    <script src='../js/p-publicaciones.js' type='module' defer></script>
 
 
 </head>
-<body class="fs-1 bg-opacity-10 bg-dark bg-gradient gap-3 h-100 d-flex flex-column overflow-hidden" style="height:100vh;">
+<body class="position-relative fs-1 bg-opacity-10 bg-dark bg-gradient gap-3 h-100 d-flex flex-column overflow-hidden" style="height:100vh;">
     
     <!-- NAVBAR TELEFONO -->
     <div id="tDivCabecera" class=" d-flex align-items-center justify-content-center p-2 gap-3 bg-primary" style="height:90px">
@@ -33,11 +32,11 @@
                     </div>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                            <li class="nav-item"><a class="nav-link active" aria-current="page" id="tNavPublicar" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLightNavbar" aria-controls="offcanvasLightNavbar">Publicar estado</a></li>
-                            <li class="nav-item"><a class="nav-link" id="tNavBuscar">Buscar usuarios</a></li> 
+                            <li class="nav-item"><a class="btn btn-link nav-link active" aria-current="page" id="tNavPublicar" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLightNavbar" aria-controls="offcanvasLightNavbar">Publicar estado</a></li>
+                            <li class="nav-item"><a class="btn btn-link nav-link" id="tNavBuscar" data-bs-toggle="offcanvas">Buscar usuarios</a></li> 
                             <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Cuenta</a>
                                 <ul class="dropdown-menu dropdown-menu-light">
-                                  <li><a class="dropdown-item"  onclick="window.location = './p-mensajeria.php' ">Mensajería</a></li>
+                                  <li><a class="dropdown-item"  href="./p-mensajeria.php">Mensajería</a></li>
                                   <li><a class="dropdown-item" href="./p-amigos.php">Mis amigos</a></li>
                                   <li><hr class="dropdown-divider"></li>
                                   <li><a class="dropdown-item" href="../backend/cerrarSesion.php?cerrar=yes">Cerrar sesión</a></li>
@@ -52,10 +51,10 @@
             <img src="../src/logo.png " style="height:70px">
         </div>
 
-        <img src="../src/buscador.png" height="40" id="tDivBuscar" class="d-none d-sm-block"></img>        
-        <img src="../src/mensajeria.png" height="40" id="tDivMensajeria" class="d-none d-sm-block" onclick=" window.location = './p-mensajeria.php' ">
-        <img src="../src/publicar.png" height="40" id="tImgPublicar" class="d-none d-sm-block">
-        <div class="nav-item dropdown d-none d-sm-block" id="tDivOpciones">
+        <img src="../src/buscador.png" height="50" id="tDivBuscar" class="btn btn-link d-none d-sm-block"></img>   
+        <img src="../src/mensajeria.png" height="50" id="tDivMensajeria" class="btn btn-link d-none d-sm-block" onclick=" window.location = './p-mensajeria.php' ">
+        <img src="../src/publicar.png" height="50" id="tImgPublicar" class="btn btn-link d-none d-sm-block">
+        <div class="btn btn-link nav-item dropdown d-none d-sm-block" id="tDivOpciones">
             <img class="nav-link dropdown-toggle" data-bs-toggle="dropdown" src="../src/menu.png">
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="./p-amigos.php">Mis amigos</a></li>
@@ -118,6 +117,15 @@
             </div>
          <input id="tInpBuscar" class="flex-grow-1 mx-auto form-control" style="max-width:500px"type="text" placeholder="Buscar">
         </div>
+
+        <!-- INICIO : alerta caundo agregamos con éxito un amigo-->
+
+        <div id="tDivInfAgregar" class="d-none position-absolute fs-6 bg-secondary opacity-75 text-center rounded-5 px-3 py-2 text-light
+            mt-3 bottom-25 start-50 translate-middle-x" style="width:250px">
+            Agregado a tu lista de amigos
+        </div>
+
+        <!-- FIN -->
 
         <div id="nDivUsuarios" class="container pt-4 ">
         </div>

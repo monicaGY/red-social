@@ -5,58 +5,71 @@ $bd = new Mensajeria_BD();
 if(isset($_GET)){
 
 
-    // if(isset($_GET['usuario'])){
+    if(isset($_GET['user'])){
+        //  CONSULTAS PARA PUBLICACIONES        
+        if(isset($_GET['amigos'])){
+            $consulta =
+                'SELECT u.* from usuario u, amigo a 
+                where u.nombre= a.nombre 
+                and a.amigo = '.$_GET['user'];
 
-    //     $consulta = 
-    //         'SELECT * FROM `mensaje` 
-    //         INNER JOIN chat on 
-    //         chat.idChat = mensaje.destinatario
-    //         WHERE remitente ="'.$_GET['usuario'].'";';
-    // }
-    if(isset($_GET['user']) && empty($_GET['amigos'])){
-        $consulta =
-            'SELECT chat.idChat, usuario.idUsuario, usuario.nombre 
-            FROM `chat` INNER JOIN usuario
-            ON chat.usuario_1 = usuario.idUsuario OR chat.usuario_2 = usuario.idUsuario
-            WHERE usuario_1 = "'.$_GET['user'].'"
-            AND usuario.idUsuario<>"'.$_GET['user'].'";';
+
+        }else if(isset($_GET['id'])){
+            $consulta = 
+                'SELECT * FROM usuario u 
+                WHERE u.idUsuario ='.$_GET['id'];
+
+        }else if(isset($_GET['chats'])){
+            //mostrar chats del usuario logeado
+            $consulta =
+                'SELECT c.*
+                FROM chat c WHERE 
+                c.usuario_1 = '.$_GET['user'].' OR  c.usuario_2 = '.$_GET['user'];
+        }else{
+            //  CONSULTA BUSCADOR
+            $consulta = 
+                'SELECT * FROM `usuario`
+                WHERE nombre LIKE "'.$_GET['user'].'%"';
+
+            if(!empty($_GET['user']) && isset($_GET['publicaciones'])){
+                $consulta = 
+                    'SELECT u.idUsuario,u.nombre, p.*, a.amigo FROM usuario u 
+                    LEFT JOIN amigo a ON u.nombre = a.nombre
+                    INNER join publicacion p on u.idUsuario = p.idAutor
+                    WHERE p.idAutor='.$_GET['user'].' || a.amigo = '.$_GET['user'].'
+                    ORDER BY fecha DESC, hora DESC';
+            }
+
+            if(empty($_GET['user'])){
+                $consulta = 'SELECT * FROM usuario';
+            }
+        }
     }
 
+    if(isset($_GET['userId'])){
+        $consulta = 
+            'SELECT * FROM usuario 
+            WHERE idUsuario='.$_GET['userId'];
+    }
+
+  
+
+    if(isset($_GET['user1']) && isset($_GET['user2'])){
+        $consulta = 
+            'SELECT c.*
+            FROM chat c WHERE 
+            (c.usuario_1 = '.$_GET['user1'].' and  c.usuario_2 = '.$_GET['user2'].') 
+            or (c.usuario_1='.$_GET['user2'].' and c.usuario_2='.$_GET['user1'].')';
+    }
     if(isset($_GET['idUsuario1']) && isset($_GET['idUsuario2'])){
         $consulta=
             'SELECT * FROM mensaje 
             where (remitente ='.$_GET['idUsuario1'].' OR remitente='.$_GET['idUsuario2'].')  
             AND (destinatario='.$_GET['idUsuario1'].' OR destinatario='.$_GET['idUsuario2'].') 
-            ORDER BY fecha, hora;';
+            ORDER BY fecha, hora';
     }
 
-    // if(isset($_GET['usuarios']) && isset($_GET['usuario'])){
-    //     $consulta =
-    //         'SELECT DISTINCT(usuario.nombre), usuario.idUsuario 
-    //         from usuario LEFT JOIN amigo ON amigo.amigo = usuario.idUsuario
-    //         WHERE (AMIGO.amigo IS NULL || amigo.amigo!='.$_GET['usuario'].') 
-    //         AND usuario.nombre LIKE "'.$_GET['usuarios'].'%"';
-    // }
-
-    if(isset($_GET['usuario'])){
-        $consulta = 'SELECT usuario.idUsuario,usuario.nombre AS principal,amigo.id as idAmigo, amigo.nombre AS segundario, amigo.amigo
-            from usuario INNER JOIN amigo ON amigo.amigo = usuario.idUsuario WHERE usuario.idUsuario='.$_GET['usuario'];
-    }
-    if(isset($_GET['usuarios'])){
-        $consulta = 'SELECT * FROM `usuario`
-        WHERE nombre LIKE "'.$_GET['usuarios'].'%"';
-    }
-    if(isset($_GET['publicaciones'])){
-        $consulta = 'SELECT publicacion.*, amigo.nombre FROM usuario 
-            INNER JOIN amigo on usuario.idUsuario = amigo.amigo
-            INNER JOIN publicacion ON amigo.id = publicacion.idAutor
-            where usuario.idUsuario ='.$_GET['publicaciones'].'
-            UNION
-            SELECT publicacion.* , usuario.nombre FROM publicacion
-            INNER JOIN usuario on publicacion.idAutor = usuario.idUsuario
-            where idAutor ='.$_GET['publicaciones'].'
-            ORDER BY fecha DESC, hora DESC';
-    }
+   
 
     $consulta = $bd->getConnection()->prepare($consulta);
     $consulta->execute();

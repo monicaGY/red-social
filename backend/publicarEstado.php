@@ -14,7 +14,4 @@ $resultado = $bd -> crearPublicacion($datos);
 if($resultado){
     echo json_encode(array("tipo" => "estado", "accion" => "publicar", "resultado" => "correcto"));
 }
-// else{
-//     echo json_encode(array("tipo" => "estado", "accion" => "publicar", "resultado" => "fallido"));
-// }
 ?>

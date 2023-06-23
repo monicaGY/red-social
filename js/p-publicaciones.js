@@ -1,13 +1,35 @@
-export async function mostrarPublicaciones(){
-    const response = await fetch(`http://localhost/00_git/chat/rest.php?publicaciones=${usuario}`)
-    const data = await response.json()
+import { cambiarFormatoFechaConYear } from "./formatearDate.js";
+import { meses } from "./formatearDate.js";
+export async function publicacionesDelUsuario(){
+    const response = await fetch(`http://localhost/00_git/chat/rest.php?user=${usuario}&publicaciones`)
+
+    const publicaciones =await response.json();
 
     const contenedor = document.querySelector('#tDivPublicaciones')
-
     while(contenedor.hasChildNodes()){
         contenedor.removeChild(contenedor.firstChild)
     }
-    data.forEach(publicacion => {
+
+    publicaciones.forEach(publicacion => {
+
+        if(publicacion.amigo === usuario || publicacion.idUsuario === usuario){
+            mostrarPublicaciones(publicacion)
+
+        }
+        
+
+    });
+    
+
+
+
+}
+
+async function mostrarPublicaciones(publicacion){
+
+    const contenedor = document.querySelector('#tDivPublicaciones')
+
+   
         const nPublicacion = document.createElement('div')
         const nBody = document.createElement('div')
         const nCabecera = document.createElement('div')
@@ -35,7 +57,7 @@ export async function mostrarPublicaciones(){
         nUser.innerHTML = `@${publicacion.nombre}`        
         nHora.innerHTML = publicacion.hora.substr(0,5)        
         nTxt.innerHTML = publicacion.mensaje            
-        nFecha.innerHTML = publicacion.fecha
-    });
+        nFecha.innerHTML = cambiarFormatoFechaConYear(publicacion.fecha,meses)
+    
 
 }

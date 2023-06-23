@@ -14,7 +14,6 @@ async function listarAmigos(){
     data.forEach(user => {
         const nDivCaja = document.createElement('div')
         nDivCaja.setAttribute('id',user.idUsuario)
-        nDivCaja.setAttribute('data-idChat',user.idChat)
         nDivCaja.setAttribute('class','d-flex border-top p-2 align-items-center ')
         contenedor.appendChild(nDivCaja);
 
@@ -33,10 +32,9 @@ async function listarAmigos(){
 
 
         nDivCaja.addEventListener('click', e => {
-            //obtener el padre más cercano del elemento
             const idAmigo = e.target.closest('#tDivAmigos>div').id
-            const chatId= e.target.closest('#tDivAmigos>div').dataset.idchat
-            window.location = `p-mensajeria.php?amigo=${idAmigo}&chat=${chatId}`
+            window.location = `p-mensajeria.php?amigo=${idAmigo}`
+
 
         })
     });

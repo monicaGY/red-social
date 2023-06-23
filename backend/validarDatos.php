@@ -7,6 +7,4 @@ $expresiones = [
 	'telefono'=> '/^\d{7,14}$/' // 7 a 14 numeros.
 ]
 
-// [a-zA-Z]+[0-9]+[^\S]
-// [a-zA-Z0-9]{4,16}
 ?>

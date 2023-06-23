@@ -55,6 +55,7 @@ class Mensajeria_BD{
            return true;
     
         }
+        return false;
     }
     function delvolverIdUsuario($usuario){
         $consulta = "SELECT * FROM usuario WHERE nombre='".$usuario."';" ;
@@ -72,8 +73,8 @@ class Mensajeria_BD{
     }
 
     function insertarMensaje($datos){
-        $consulta = 'INSERT INTO mensaje(id,chat_id,remitente,destinatario,contenido,fecha,hora) 
-        VALUES (NULL,"'.$datos['chatId'].'","'.$datos['remitente'].'","'.$datos['destinatario'].'","'.$datos['mensaje'].'","'.$datos['fecha'].'","'.$datos['hora'].'")';
+        $consulta = 'INSERT INTO mensaje(id,chat_id,remitente,destinatario,contenido,fecha,hora,leido) 
+        VALUES (NULL,"'.$datos['chatId'].'","'.$datos['remitente'].'","'.$datos['destinatario'].'","'.$datos['mensaje'].'","'.$datos['fecha'].'","'.$datos['hora'].'",0)';
         $consulta = $this->_connection->prepare($consulta);
         $consulta->execute();
 
@@ -108,6 +109,7 @@ class Mensajeria_BD{
            return true;
     
         }
+        return false;
     
     }
     function crearChat($datos){
@@ -152,18 +154,19 @@ class Mensajeria_BD{
         return  false;
     }
 
+    function eliminarAmigo($datos){
+        $consulta = 'DELETE FROM amigo where id='.$datos['amigoId'].' and amigo ='.$datos['usuarioId'];
+        $consulta = $this->_connection->prepare($consulta);
+        $consulta->execute();
+
+        if($consulta->rowCount()>0){
+            return true;
+        } 
+        return  false;
+    }
+
     
 }
-
-// $bd = new Mensajeria_BD();
-
-// $datos = array (
-//     "remitente" => 1,
-//     "destinatario" => 13
-// );
-// if($bd -> crearChat($datos)){
-//     echo 'Id del chat creado'. $bd -> devolverIdChat($datos);
-// }
 
 
 ?>

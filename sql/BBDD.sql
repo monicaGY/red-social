@@ -7,9 +7,7 @@ CREATE TABLE usuario(
 CREATE TABLE chat(
     idChat INT AUTO_INCREMENT PRIMARY KEY,
     usuario_1 int NOT NULL,
-    usuario_2 int NOT NULL,
-    FOREIGN KEY (usuario_1) REFERENCES usuario(idUsuario),
-    FOREIGN KEY (usuario_2) REFERENCES usuario(idUsuario)
+    usuario_2 int NOT NULL
 );
 
 
@@ -21,13 +19,14 @@ CREATE TABLE mensaje(
     contenido VARCHAR(5000),
     fecha date,
     hora time,
-    
+    leido boolean,
+
     FOREIGN KEY (chat_id) REFERENCES chat(idChat),
     FOREIGN KEY (remitente) REFERENCES usuario(idUsuario),
     FOREIGN KEY (destinatario) REFERENCES usuario(idUsuario)
     
     
-)
+);
 
 CREATE TABLE amigo(
 	id INT NOT NULL,
